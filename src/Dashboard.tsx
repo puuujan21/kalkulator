@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 type Wydatek = {
   id: number;
@@ -15,11 +15,31 @@ type Cel = {
   aktualna: number;
 };
 
-function Dashboard() {
-  const wydatki: Wydatek[] = JSON.parse(localStorage.getItem('wydatki') || '[]');
-  const cele: Cel[] = JSON.parse(localStorage.getItem('cele') || '[]');
+const API = 'http://localhost:5000/api';
 
-  const sumaWydatkow = wydatki.reduce((acc, w) => acc + w.kwota, 0);
+function getToken() {
+  return localStorage.getItem('token') || '';
+}
+
+function Dashboard() {
+  const [wydatki, setWydatki] = useState<Wydatek[]>([]);
+  const [cele, setCele] = useState<Cel[]>([]);
+
+  useEffect(() => {
+    fetch(`${API}/wydatki`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+      .then((r) => r.json())
+      .then(setWydatki);
+
+    fetch(`${API}/cele`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+      .then((r) => r.json())
+      .then(setCele);
+  }, []);
+
+  const sumaWydatkow = wydatki.reduce((acc, w) => acc + Number(w.kwota), 0);
   const ostatnieWydatki = wydatki.slice(0, 5);
 
   return (
@@ -50,8 +70,8 @@ function Dashboard() {
                 <span className="kategoria-tag">{w.kategoria}</span>
               </div>
               <div className="wydatek-prawa">
-                <span>{w.data}</span>
-                <strong>{w.kwota.toFixed(2)} zł</strong>
+                <span>{w.data?.toString().split('T')[0]}</span>
+                <strong>{Number(w.kwota).toFixed(2)} zł</strong>
               </div>
             </div>
           ))}
@@ -61,7 +81,7 @@ function Dashboard() {
           <h2>Cele oszczędnościowe</h2>
           {cele.length === 0 && <p className="brak-celow">Brak celów</p>}
           {cele.map((cel) => {
-            const procent = Math.round((cel.aktualna / cel.docelowa) * 100);
+            const procent = Math.round((Number(cel.aktualna) / Number(cel.docelowa)) * 100);
             return (
               <div key={cel.id} className="cel-dashboard">
                 <div className="cel-top">

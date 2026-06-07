@@ -7,6 +7,12 @@ type Cel = {
   aktualna: number;
 };
 
+const API = 'http://localhost:5000/api';
+
+function getToken() {
+  return localStorage.getItem('token') || '';
+}
+
 function Cele() {
   const [cele, setCele] = useState<Cel[]>([]);
   const [nazwa, setNazwa] = useState('');
@@ -15,41 +21,46 @@ function Cele() {
   const [wplacanaKwota, setWplacanaKwota] = useState<{ [id: number]: string }>({});
 
   useEffect(() => {
-    const zapisane = localStorage.getItem('cele');
-    if (zapisane) setCele(JSON.parse(zapisane));
+    fetch(`${API}/cele`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+      .then((r) => r.json())
+      .then(setCele);
   }, []);
 
-  const zapiszDoStorage = (noweCele: Cel[]) => {
-    localStorage.setItem('cele', JSON.stringify(noweCele));
-    setCele(noweCele);
-  };
-
-  const dodajCel = () => {
+  const dodajCel = async () => {
     if (!nazwa || !docelowa) return;
-    const nowy: Cel = {
-      id: Date.now(),
-      nazwa,
-      docelowa: parseFloat(docelowa),
-      aktualna: 0,
-    };
-    zapiszDoStorage([...cele, nowy]);
+    const odpowiedz = await fetch(`${API}/cele`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+      body: JSON.stringify({ nazwa, docelowa: parseFloat(docelowa) }),
+    });
+    const nowy = await odpowiedz.json();
+    setCele([...cele, nowy]);
     setNazwa('');
     setDocelowa('');
     setDodawanie(false);
   };
 
-  const dodajSrodki = (id: number) => {
+  const dodajSrodki = async (id: number) => {
     const kwota = parseFloat(wplacanaKwota[id] || '0');
     if (!kwota) return;
-    const zaktualizowane = cele.map((c) =>
-      c.id === id ? { ...c, aktualna: Math.min(c.aktualna + kwota, c.docelowa) } : c
-    );
-    zapiszDoStorage(zaktualizowane);
+    const odpowiedz = await fetch(`${API}/cele/${id}/wplata`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+      body: JSON.stringify({ kwota }),
+    });
+    const zaktualizowany = await odpowiedz.json();
+    setCele(cele.map((c) => (c.id === id ? zaktualizowany : c)));
     setWplacanaKwota((prev) => ({ ...prev, [id]: '' }));
   };
 
-  const usunCel = (id: number) => {
-    zapiszDoStorage(cele.filter((c) => c.id !== id));
+  const usunCel = async (id: number) => {
+    await fetch(`${API}/cele/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    setCele(cele.filter((c) => c.id !== id));
   };
 
   return (
@@ -74,7 +85,7 @@ function Cele() {
       <div className="lista-celow">
         {cele.length === 0 && <p className="brak-celow">Nie masz jeszcze żadnych celów. Dodaj pierwszy!</p>}
         {cele.map((cel) => {
-          const procent = Math.round((cel.aktualna / cel.docelowa) * 100);
+          const procent = Math.round((Number(cel.aktualna) / Number(cel.docelowa)) * 100);
           return (
             <div key={cel.id} className="cel-karta">
               <div className="cel-top">
@@ -85,8 +96,8 @@ function Cele() {
                 <div className="pasek-wypelnienie" style={{ width: `${procent}%` }} />
               </div>
               <div className="cel-kwoty">
-                <span>{cel.aktualna.toFixed(2)} zł odłożone</span>
-                <span>{procent}% z {cel.docelowa.toFixed(2)} zł</span>
+                <span>{Number(cel.aktualna).toFixed(2)} zł odłożone</span>
+                <span>{procent}% z {Number(cel.docelowa).toFixed(2)} zł</span>
               </div>
               {procent < 100 && (
                 <div className="cel-wplata">
@@ -99,7 +110,7 @@ function Cele() {
                   <button className="przycisk-dodaj" onClick={() => dodajSrodki(cel.id)}>Dodaj</button>
                 </div>
               )}
-              {procent === 100 && <p className="cel-osiagniety">Cel osiągnięty!</p>}
+              {procent >= 100 && <p className="cel-osiagniety">Cel osiągnięty!</p>}
             </div>
           );
         })}
