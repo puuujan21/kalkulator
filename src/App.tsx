@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import Kalkulator from './Kalkulator';
+import Wydatki from './Wydatki';
+import Cele from './Cele';
 
 function App() {
   const [aktywnaZakladka, setAktywnaZakladka] = useState('kalkulator');
@@ -19,8 +21,8 @@ function App() {
       <main>
         {aktywnaZakladka === 'kalkulator' && <Kalkulator />}
         {aktywnaZakladka === 'dashboard' && <p>Dashboard - wkrótce</p>}
-        {aktywnaZakladka === 'wydatki' && <p>Wydatki - wkrótce</p>}
-        {aktywnaZakladka === 'cele' && <p>Cele - wkrótce</p>}
+        {aktywnaZakladka === 'wydatki' && <Wydatki />}
+        {aktywnaZakladka === 'cele' && <Cele />}
       </main>
     </div>
   );

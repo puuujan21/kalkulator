@@ -90,3 +90,156 @@
   border-bottom: 1px solid #e2e8f0;
   color: #4a5568;
 }
+.przycisk-dodaj {
+  padding: 0.75rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.przycisk-dodaj:hover {
+  background: #1d4ed8;
+}
+
+.podsumowanie {
+  margin-bottom: 2rem;
+}
+
+.kategorie-podsumowanie {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.kategoria-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4a5568;
+}
+
+.lista-wydatkow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wydatek-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.kategoria-tag {
+  margin-left: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  background: #dbeafe;
+  color: #2563eb;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.wydatek-prawa {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #4a5568;
+}
+
+.przycisk-usun {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.cele-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.lista-celow {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.cel-karta {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.cel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.pasek-tlo {
+  background: #e2e8f0;
+  border-radius: 999px;
+  height: 12px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.pasek-wypelnienie {
+  background: #2563eb;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.cel-kwoty {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+}
+
+.cel-wplata {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cel-wplata input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.cel-wplata .przycisk-dodaj {
+  margin-top: 0;
+  padding: 0.5rem 1rem;
+}
+
+.cel-osiagniety {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.brak-celow {
+  color: #4a5568;
+  text-align: center;
+  padding: 2rem 0;
+}
