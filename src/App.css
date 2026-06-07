@@ -429,3 +429,55 @@
 .harmonogram tr:nth-child(even) {
   background: #f8fafc;
 }
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f4f8;
+}
+
+.auth-karta {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-tytul {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2563eb;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-blad {
+  color: #e53e3e;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  background: #fef2f2;
+  border-radius: 6px;
+  text-align: center;
+}
+.uzytkownik-info {
+  color: #4a5568;
+  font-size: 0.95rem;
+  padding: 0 0.5rem;
+}
+
+.przycisk-wyloguj {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid #e53e3e;
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+  color: #e53e3e;
+  font-size: 1rem;
+}
+
+.przycisk-wyloguj:hover {
+  background: #fef2f2;
+}
