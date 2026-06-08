@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
 interface ProfilData {
-  dochodNetto: number;
-  staleWydatki: number;
+  dochod_netto: number;
+  stale_wydatki: number;
 }
 
 interface Wydatek {
@@ -16,8 +16,8 @@ interface Wydatek {
 interface Cel {
   id: number;
   nazwa: string;
-  kwotaDocelowa: number;
-  kwotaAktualna: number;
+  docelowa: number;
+  aktualna: number;
 }
 
 const karta: React.CSSProperties = {
@@ -58,9 +58,9 @@ export default function Dashboard() {
     const headers = { Authorization: `Bearer ${token}` };
 
     Promise.all([
-      fetch('/api/profil', { headers }).then(r => r.json()),
-      fetch(`/api/wydatki?rok=${rok}&miesiac=${miesiac}`, { headers }).then(r => r.json()),
-      fetch('/api/cele', { headers }).then(r => r.json()),
+fetch('http://localhost:5000/api/profil', { headers }).then(r => r.json()),
+fetch(`http://localhost:5000/api/wydatki?rok=${rok}&miesiac=${miesiac}`, { headers }).then(r => r.json()),
+fetch('http://localhost:5000/api/cele', { headers }).then(r => r.json()),
     ]).then(([profilData, wydatkiData, celeData]) => {
       setProfil(profilData);
       setWydatki(Array.isArray(wydatkiData) ? wydatkiData : []);
@@ -70,8 +70,8 @@ export default function Dashboard() {
   }, []);
 
   const sumaWydatkow = wydatki.reduce((s, w) => s + Number(w.kwota), 0);
-  const dochodNetto = profil?.dochodNetto ?? 0;
-  const staleWydatki = profil?.staleWydatki ?? 0;
+  const dochodNetto = profil?.dochod_netto ?? 0;
+  const staleWydatki = profil?.stale_wydatki ?? 0;
   const wolneKonto = dochodNetto - staleWydatki - sumaWydatkow;
 
   const formatKwota = (kwota: number) =>
@@ -163,7 +163,7 @@ export default function Dashboard() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {cele.slice(0, 4).map(c => {
-                const procent = Math.min(100, Math.round((Number(c.kwotaAktualna) / Number(c.kwotaDocelowa)) * 100));
+                const procent = Math.min(100, Math.round((Number(c.aktualna) / Number(c.docelowa)) * 100));
                 return (
                   <div key={c.id}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.375rem' }}>
@@ -180,7 +180,7 @@ export default function Dashboard() {
                       }} />
                     </div>
                     <p style={{ fontSize: '0.7rem', color: 'hsl(240,5%,45%)', marginTop: '0.25rem' }}>
-                      {formatKwota(Number(c.kwotaAktualna))} / {formatKwota(Number(c.kwotaDocelowa))}
+                      {formatKwota(Number(c.aktualna))} / {formatKwota(Number(c.docelowa))}
                     </p>
                   </div>
                 );

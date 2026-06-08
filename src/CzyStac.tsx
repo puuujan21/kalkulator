@@ -80,7 +80,10 @@ function CzyStac() {
   const [dochodNetto, setDochodNetto] = useState('');
   const [staleWydatki, setStaleWydatki] = useState('');
   const [cenaGotowka, setCenaGotowka] = useState('');
+  const [nazwaZakupu, setNazwaZakupu] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [dodanoDoCelow, setDodanoDoCelow] = useState(false);
+  const [dodanoDoWydatkow, setDodanoDoWydatkow] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/profil', {
@@ -124,6 +127,37 @@ function CzyStac() {
 
   const fmt = (n: number) => new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(n);
 
+const dodajJakoCel = async () => {
+  if (!cenaGotowka) return;
+  await fetch('http://localhost:5000/api/cele', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token') || ''}` },
+    body: JSON.stringify({
+      nazwa: nazwaZakupu.trim() || 'Zakup gotówkowy',
+      docelowa: parseFloat(cenaGotowka),
+    }),
+  });
+  setDodanoDoCelow(true);
+  setTimeout(() => setDodanoDoCelow(false), 3000);
+};
+
+  const dodajJakoWydatek = async () => {
+    if (!calkowitaMiesiecznaRata) return;
+    await fetch('http://localhost:5000/api/wydatki', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token') || ''}` },
+      body: JSON.stringify({
+        nazwa: 'Rata kredytu',
+        kwota: Math.round(calkowitaMiesiecznaRata * 100) / 100,
+        kategoria: 'mieszkanie',
+        data: new Date().toISOString().split('T')[0],
+        staly: true,
+      }),
+    });
+    setDodanoDoWydatkow(true);
+    setTimeout(() => setDodanoDoWydatkow(false), 3000);
+  };
+
   const karta: React.CSSProperties = {
     background: 'hsl(240,6%,7%)',
     border: '1px solid hsl(240,4%,13%)',
@@ -152,8 +186,7 @@ function CzyStac() {
             key={t.value}
             onClick={() => setTryb(t.value as Tryb)}
             style={{
-              padding: '0.5rem 1.25rem',
-              borderRadius: '8px', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer', border: 'none',
+              padding: '0.5rem 1.25rem', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer', border: 'none',
               background: tryb === t.value ? 'hsl(217,91%,60%)' : 'hsl(240,6%,10%)',
               color: tryb === t.value ? '#fff' : 'hsl(240,5%,65%)',
               transition: 'all 0.15s',
@@ -193,20 +226,28 @@ function CzyStac() {
             </div>
           </div>
 
-          {tryb === 'gotowka' && (
-            <div style={karta}>
-              <p style={sectionTitle}>Zakup za gotówkę</p>
-              <div>
-                <label style={labelStyle}>Cena zakupu</label>
-                <input type="number" value={cenaGotowka} onChange={e => setCenaGotowka(e.target.value)} placeholder="np. 50000"
-                  style={{ ...inputStyle, ...focusStyle('cena') }}
-                  onFocus={() => setFocusedField('cena')} onBlur={() => setFocusedField(null)} />
-              </div>
-            </div>
-          )}
+     {tryb === 'gotowka' && (
+  <div style={karta}>
+    <p style={sectionTitle}>Zakup za gotówkę</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div>
+        <label style={labelStyle}>Nazwa zakupu</label>
+        <input type="text" value={nazwaZakupu} onChange={e => setNazwaZakupu(e.target.value)} placeholder="np. Nowy laptop, Auto, Wakacje"
+          style={{ ...inputStyle, ...focusStyle('nazwa') }}
+          onFocus={() => setFocusedField('nazwa')} onBlur={() => setFocusedField(null)} />
+      </div>
+      <div>
+        <label style={labelStyle}>Cena zakupu</label>
+        <input type="number" value={cenaGotowka} onChange={e => setCenaGotowka(e.target.value)} placeholder="np. 50000"
+          style={{ ...inputStyle, ...focusStyle('cena') }}
+          onFocus={() => setFocusedField('cena')} onBlur={() => setFocusedField(null)} />
+      </div>
+    </div>
+  </div>
+)}
         </div>
 
-        {/* Prawa — parametry kredytu lub wyniki gotówki */}
+        {/* Prawa */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {tryb === 'kredyt' && (
             <div style={karta}>
@@ -321,43 +362,76 @@ function CzyStac() {
                 </div>
               )}
 
-              <button
-                onClick={() => setPokazHarmonogram(!pokazHarmonogram)}
-                style={{
-                  padding: '0.5rem 1rem', background: 'hsl(240,6%,10%)', border: '1px solid hsl(240,4%,16%)',
-                  borderRadius: '8px', color: 'hsl(0,0%,75%)', fontSize: '0.8125rem', cursor: 'pointer',
-                }}
-              >
-                {pokazHarmonogram ? 'Ukryj harmonogram' : 'Pokaż harmonogram spłaty'}
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <button
+                  onClick={() => setPokazHarmonogram(!pokazHarmonogram)}
+                  style={{ padding: '0.5rem 1rem', background: 'hsl(240,6%,10%)', border: '1px solid hsl(240,4%,16%)', borderRadius: '8px', color: 'hsl(0,0%,75%)', fontSize: '0.8125rem', cursor: 'pointer' }}
+                >
+                  {pokazHarmonogram ? 'Ukryj harmonogram' : 'Pokaż harmonogram spłaty'}
+                </button>
+                <button
+                  onClick={dodajJakoWydatek}
+                  style={{
+                    padding: '0.5rem 1rem', background: 'hsl(240,6%,10%)', border: '1px solid hsl(240,4%,16%)',
+                    borderRadius: '8px', fontSize: '0.8125rem', cursor: 'pointer',
+                    color: dodanoDoWydatkow ? 'hsl(142,71%,55%)' : 'hsl(0,0%,75%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  {dodanoDoWydatkow ? (
+                    <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Dodano jako stały wydatek</>
+                  ) : '+ Dodaj ratę jako stały wydatek'}
+                </button>
+              </div>
             </>
           )}
 
           {/* Wyniki gotówki */}
           {tryb === 'gotowka' && miesiaceNaGotowke !== null && cenaGotowka && (
-            <div style={{
-              ...karta,
-              background: dostepneSrodki > 0 ? 'hsl(217,60%,8%)' : 'hsl(0,60%,8%)',
-              border: `1px solid ${dostepneSrodki > 0 ? 'hsl(217,60%,18%)' : 'hsl(0,60%,18%)'}`,
-            }}>
-              {dostepneSrodki <= 0 ? (
-                <p style={{ fontSize: '0.875rem', color: 'hsl(0,72%,60%)', fontWeight: 600, margin: 0 }}>
-                  Brak wolnych środków do oszczędzania
-                </p>
-              ) : miesiaceNaGotowke <= 1 ? (
-                <p style={{ fontSize: '0.875rem', color: 'hsl(142,71%,55%)', fontWeight: 600, margin: 0 }}>
-                  Stać Cię na to już teraz!
-                </p>
-              ) : (
-                <>
-                  <p style={{ fontSize: '0.75rem', color: 'hsl(217,91%,70%)', marginBottom: '0.375rem' }}>Czas oszczędzania</p>
-                  <p style={{ fontSize: '1.75rem', fontWeight: 700, color: 'hsl(0,0%,98%)', letterSpacing: '-0.02em', margin: '0 0 0.375rem' }}>
-                    {miesiaceNaGotowke} mies. ({(miesiaceNaGotowke / 12).toFixed(1)} lat)
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{
+                ...karta,
+                background: dostepneSrodki > 0 ? 'hsl(217,60%,8%)' : 'hsl(0,60%,8%)',
+                border: `1px solid ${dostepneSrodki > 0 ? 'hsl(217,60%,18%)' : 'hsl(0,60%,18%)'}`,
+              }}>
+                {dostepneSrodki <= 0 ? (
+                  <p style={{ fontSize: '0.875rem', color: 'hsl(0,72%,60%)', fontWeight: 600, margin: 0 }}>
+                    Brak wolnych środków do oszczędzania
                   </p>
-                  <p style={{ fontSize: '0.8125rem', color: 'hsl(240,5%,55%)', margin: 0 }}>
-                    Odkładając {fmt(dostepneSrodki)} miesięcznie
+                ) : miesiaceNaGotowke <= 1 ? (
+                  <p style={{ fontSize: '0.875rem', color: 'hsl(142,71%,55%)', fontWeight: 600, margin: 0 }}>
+                    Stać Cię na to już teraz!
                   </p>
-                </>
+                ) : (
+                  <>
+                    <p style={{ fontSize: '0.75rem', color: 'hsl(217,91%,70%)', marginBottom: '0.375rem' }}>Czas oszczędzania</p>
+                    <p style={{ fontSize: '1.75rem', fontWeight: 700, color: 'hsl(0,0%,98%)', letterSpacing: '-0.02em', margin: '0 0 0.375rem' }}>
+                      {miesiaceNaGotowke} mies. ({(miesiaceNaGotowke / 12).toFixed(1)} lat)
+                    </p>
+                    <p style={{ fontSize: '0.8125rem', color: 'hsl(240,5%,55%)', margin: 0 }}>
+                      Odkładając {fmt(dostepneSrodki)} miesięcznie
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {dostepneSrodki > 0 && miesiaceNaGotowke > 1 && (
+                <button
+                  onClick={dodajJakoCel}
+                  style={{
+                    width: '100%', padding: '0.5rem 1rem',
+                    background: 'hsl(240,6%,10%)', border: '1px solid hsl(240,4%,16%)',
+                    borderRadius: '8px', fontSize: '0.8125rem', cursor: 'pointer',
+                    color: dodanoDoCelow ? 'hsl(142,71%,55%)' : 'hsl(0,0%,75%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem',
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  {dodanoDoCelow ? (
+                    <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Dodano jako cel oszczędnościowy</>
+                  ) : '+ Dodaj jako cel oszczędnościowy'}
+                </button>
               )}
             </div>
           )}
