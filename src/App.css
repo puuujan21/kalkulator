@@ -489,3 +489,57 @@
   border-radius: 999px;
   font-size: 0.8rem;
 }
+.onboarding-kroki {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.onboarding-krok {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.onboarding-krok.aktywny {
+  background: #2563eb;
+  color: white;
+}
+
+.onboarding-przyciski {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.przycisk-pomin {
+  background: none;
+  border: none;
+  color: #4a5568;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.staly-wydatek-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.staly-wydatek-row input {
+  padding: 0.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  flex: 1;
+}

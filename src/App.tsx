@@ -7,6 +7,7 @@ import Dashboard from './Dashboard';
 import CzyStac from './CzyStac';
 import Auth from './Auth';
 import Profil from './Profil';
+import Onboarding from './Onboarding';
 
 type Uzytkownik = { id: number; email: string; imie: string };
 
@@ -15,17 +16,27 @@ function App() {
   const [uzytkownik, setUzytkownik] = useState<Uzytkownik | null>(null);
 
   useEffect(() => {
-    const zapisanyUzytkownik = localStorage.getItem('uzytkownik');
-    const token = localStorage.getItem('token');
-    if (zapisanyUzytkownik && token) {
-      setUzytkownik(JSON.parse(zapisanyUzytkownik));
-    }
-  }, []);
+  const zapisanyUzytkownik = localStorage.getItem('uzytkownik');
+  const token = localStorage.getItem('token');
+  if (zapisanyUzytkownik && token) {
+    setUzytkownik(JSON.parse(zapisanyUzytkownik));
+    fetch('http://localhost:5000/api/profil', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((profil) => setOnboardingDone(profil.onboarding_done));
+  }
+}, []);
 
-  const onZalogowany = (token: string, uzytkownik: Uzytkownik) => {
-    setUzytkownik(uzytkownik);
-  };
+const [onboardingDone, setOnboardingDone] = useState(false);
 
+const onZalogowany = async (token: string, uzytkownik: Uzytkownik) => {
+  setUzytkownik(uzytkownik);
+  const profil = await fetch('http://localhost:5000/api/profil', {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((r) => r.json());
+  setOnboardingDone(profil.onboarding_done);
+};
   const wyloguj = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('uzytkownik');
@@ -33,9 +44,12 @@ function App() {
   };
 
   if (!uzytkownik) {
-    return <Auth onZalogowany={onZalogowany} />;
-  }
+  return <Auth onZalogowany={onZalogowany} />;
+}
 
+if (!onboardingDone) {
+  return <Onboarding onUkoncz={() => setOnboardingDone(true)} />;
+}
   return (
     <div className="app">
       <header className="header">
