@@ -45,8 +45,8 @@ function Auth({ onZalogowany }: Props) {
     setLadowanie(true);
 
     const url = tryb === 'logowanie'
-      ? '${process.env.REACT_APP_API_URL}/api/auth/logowanie'
-      : '${process.env.REACT_APP_API_URL}/api/auth/rejestracja';
+? '/api/auth/logowanie'
+: '/api/auth/rejestracja';
 
     const body = tryb === 'logowanie'
       ? { email, haslo }
