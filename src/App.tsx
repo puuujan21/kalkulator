@@ -8,7 +8,6 @@ import CzyStac from './CzyStac';
 import Auth from './Auth';
 import Profil from './Profil';
 import Onboarding from './Onboarding';
-import { cn } from './lib/utils';
 
 type Uzytkownik = { id: number; email: string; imie: string };
 
