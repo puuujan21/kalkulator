@@ -246,12 +246,25 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.dashboard-siatka {
+.dashboard-okres {
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-siatka-gorna {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.dashboard-siatka-dolna {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
   gap: 1rem;
 }
 
@@ -272,6 +285,16 @@
   color: #2563eb;
 }
 
+.stat-opis {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 0.4rem;
+}
+
+.stat-zielony { color: #16a34a !important; }
+.stat-czerwony { color: #dc2626 !important; }
+.stat-szary { color: #64748b !important; }
+
 .dashboard-dolny {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -281,6 +304,7 @@
 .cel-dashboard {
   margin-bottom: 1rem;
 }
+
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -542,4 +566,26 @@
   border-radius: 8px;
   font-size: 1rem;
   flex: 1;
+}
+.wydatki-filtr {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.wydatki-filtr select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  cursor: pointer;
+}
+
+.wydatki-filtr-label {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.95rem;
 }
