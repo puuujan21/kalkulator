@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://kalkulator-backend-production.up.railway.app/api/:path*"
+    }
+  ]
+}
