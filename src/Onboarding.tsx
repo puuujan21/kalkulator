@@ -147,7 +147,7 @@ function Onboarding({ onUkoncz }: Props) {
 
   const zakoncz = async (pomin = false) => {
     const sumaWydatkow = pomin ? 0 : staleWydatki.reduce((acc, w) => acc + (parseFloat(w.kwota) || 0), 0);
-    await fetch('http://localhost:5000/api/profil/onboarding', {
+    await fetch('/api/profil/onboarding', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token') || ''}` },
       body: JSON.stringify({
