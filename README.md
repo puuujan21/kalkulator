@@ -32,9 +32,3 @@ A Polish personal finance planning app. Track expenses, set savings goals, calcu
 ## Running Locally
 
 ### Backend
-
-```bash
-cd backend
-npm install
-# create .env with: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, JWT_SECRET
-npm run dev
